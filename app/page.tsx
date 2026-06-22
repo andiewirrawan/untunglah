@@ -1,27 +1,17 @@
-import { supabase } from '../lib/supabase'
+import Link from "next/link";
 
-export default async function Home() {
-  const { data, error } = await supabase
-    .from('users')
-    .select('*')
-
+export default function Home() {
   return (
     <main style={{ padding: 20 }}>
       <h1>UNTUNGLAH</h1>
 
-      <p>Test Koneksi Database</p>
+      <p>
+        Sistem Pencatatan Transaksi dan Laba Rugi UMKM
+      </p>
 
-      <pre>
-        {JSON.stringify(
-          {
-            success: !error,
-            total_users: data?.length || 0,
-            error: error?.message
-          },
-          null,
-          2
-        )}
-      </pre>
+      <Link href="/login">
+        Login
+      </Link>
     </main>
-  )
+  );
 }
