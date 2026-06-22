@@ -8,16 +8,33 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
-    if (username === "owner" && password === "owner123") {
-      localStorage.setItem("role", "owner");
-      router.push("/dashboard");
-    } else {
-      alert("Username atau Password salah");
+    const response = await fetch("/api/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ username, password }),
+    });
+
+    const result = (await response.json()) as { message?: string };
+
+    setIsLoading(false);
+
+    if (!response.ok) {
+      setError(result.message ?? "Login gagal");
+      return;
     }
+
+    router.push("/dashboard");
+    router.refresh();
   }
 
   return (
@@ -48,8 +65,10 @@ export default function LoginPage() {
 
         <br />
 
-        <button type="submit">
-          Login
+        {error ? <p style={{ color: "crimson" }}>{error}</p> : null}
+
+        <button disabled={isLoading} type="submit">
+          {isLoading ? "Memproses..." : "Login"}
         </button>
       </form>
     </main>
