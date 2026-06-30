@@ -2,22 +2,48 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
   const router = useRouter();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleLogin(e: React.FormEvent) {
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    if (username === "owner" && password === "owner123") {
-      localStorage.setItem("role", "owner");
-      router.push("/dashboard");
-    } else {
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .single();
+
+    setLoading(false);
+
+    if (error || !data) {
       alert("Username atau Password salah");
+      return;
     }
+
+    if (data.status !== "aktif") {
+      alert("Akun tidak aktif");
+      return;
+    }
+
+    if (data.password_hash !== password) {
+      alert("Username atau Password salah");
+      return;
+    }
+
+    localStorage.setItem("user_id", data.id);
+    localStorage.setItem("nama", data.nama);
+    localStorage.setItem("role", data.role);
+
+    router.push("/dashboard");
   }
 
   return (
@@ -48,8 +74,8 @@ export default function LoginPage() {
 
         <br />
 
-        <button type="submit">
-          Login
+        <button type="submit" disabled={loading}>
+          {loading ? "Loading..." : "Login"}
         </button>
       </form>
     </main>
