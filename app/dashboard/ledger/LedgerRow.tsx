@@ -10,14 +10,23 @@ type COA = {
   item: string;
 };
 
+type Kasir = {
+  id: string;
+  nama: string;
+};
+
 export default function LedgerRow() {
   const [tanggal, setTanggal] = useState(tanggalHariIni());
 
   const [coa, setCoa] = useState<COA[]>([]);
   const [coaId, setCoaId] = useState("");
 
+  const [kasir, setKasir] = useState<Kasir[]>([]);
+  const [kasirId, setKasirId] = useState("");
+
   useEffect(() => {
     loadCOA();
+    loadKasir();
   }, []);
 
   async function loadCOA() {
@@ -32,6 +41,22 @@ export default function LedgerRow() {
 
       if (data.length > 0) {
         setCoaId(data[0].id);
+      }
+    }
+  }
+
+  async function loadKasir() {
+    const { data } = await supabase
+      .from("users")
+      .select("id,nama")
+      .eq("role", "kasir")
+      .eq("status", "aktif");
+
+    if (data) {
+      setKasir(data);
+
+      if (data.length > 0) {
+        setKasirId(data[0].id);
       }
     }
   }
@@ -75,15 +100,32 @@ export default function LedgerRow() {
         </select>
       </td>
 
-      <td><input type="number" /></td>
+      <td>
+        <input type="number" />
+      </td>
 
-      <td><input type="number" /></td>
+      <td>
+        <input type="number" />
+      </td>
 
       <td>0</td>
 
-      <td>-</td>
+      <td>
+        <select
+          value={kasirId}
+          onChange={(e) => setKasirId(e.target.value)}
+        >
+          {kasir.map((k) => (
+            <option key={k.id} value={k.id}>
+              {k.nama}
+            </option>
+          ))}
+        </select>
+      </td>
 
-      <td><input type="text" /></td>
+      <td>
+        <input type="text" />
+      </td>
 
       <td>draft</td>
     </tr>
