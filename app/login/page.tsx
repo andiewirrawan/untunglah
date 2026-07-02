@@ -1,38 +1,83 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
-export default function DashboardPage() {
+export default function LoginPage() {
   const router = useRouter();
 
-  useEffect(() => {
-    const userId = localStorage.getItem("user_id");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-    if (!userId) {
-      router.replace("/login");
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+
+    setLoading(true);
+
+    const { data, error } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .single();
+
+    setLoading(false);
+
+    if (error || !data) {
+      alert("Username atau Password salah");
+      return;
     }
-  }, [router]);
 
-  function handleLogout() {
-    localStorage.removeItem("user_id");
-    localStorage.removeItem("nama");
-    localStorage.removeItem("role");
+    if (data.status !== "aktif") {
+      alert("Akun tidak aktif");
+      return;
+    }
 
-    router.replace("/login");
+    if (data.password_hash !== password) {
+      alert("Username atau Password salah");
+      return;
+    }
+
+    localStorage.setItem("user_id", String(data.id));
+    localStorage.setItem("nama", data.nama);
+    localStorage.setItem("role", data.role);
+
+    router.push("/dashboard");
   }
 
   return (
-    <main style={{ padding: 20 }}>
-      <h1>Dashboard Owner</h1>
+    <main style={{ padding: 30 }}>
+      <h1>UNTUNGLAH</h1>
+      <h2>Login</h2>
 
-      <p>Selamat datang di Untunglah 🚀</p>
+      <form onSubmit={handleLogin}>
+        <div>
+          <input
+            type="text"
+            placeholder="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
 
-      <br />
+        <br />
 
-      <button onClick={handleLogout}>
-        Logout
-      </button>
+        <div>
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <br />
+
+        <button type="submit" disabled={loading}>
+          {loading ? "Loading..." : "Login"}
+        </button>
+      </form>
     </main>
   );
 }
