@@ -43,6 +43,8 @@ export default function LoginPage() {
     localStorage.setItem("nama", data.nama);
     localStorage.setItem("role", data.role);
 
+    alert("LOGIN BERHASIL");
+
     router.push("/dashboard");
   }
 
