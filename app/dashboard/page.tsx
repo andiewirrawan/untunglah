@@ -30,27 +30,38 @@ export default function DashboardPage() {
   }
 
   return (
-    <main style={{ padding: 20 }}>
+    <main style={{ padding: 20, maxWidth: 700, margin: "auto" }}>
       <h1>UNTUNGLAH</h1>
-
-      <h2>Dashboard</h2>
 
       <hr />
 
-      <p>
-        <strong>Selamat Datang,</strong>
-      </p>
+      <p><strong>{nama}</strong></p>
+      <p>Role : {role}</p>
 
-      <p>{nama}</p>
+      <hr />
 
-      <p>
-        <strong>Role :</strong> {role}
-      </p>
+      <h3>Menu</h3>
+
+      <div style={{ display: "grid", gap: 10 }}>
+
+        <button>📒 Ledger Transaksi</button>
+
+        <button>💰 Cash Count</button>
+
+        <button>📑 Piutang</button>
+
+        <button>📊 Laporan Laba Rugi</button>
+
+        <button>📁 Master COA</button>
+
+        <button>👥 Kelola User</button>
+
+      </div>
 
       <br />
 
       <button onClick={handleLogout}>
-        Logout
+        🚪 Logout
       </button>
     </main>
   );
