@@ -7,15 +7,18 @@ export default function DashboardPage() {
   const router = useRouter();
 
   useEffect(() => {
-    const session = localStorage.getItem("session");
+    const userId = localStorage.getItem("user_id");
 
-    if (!session) {
+    if (!userId) {
       router.replace("/login");
     }
   }, [router]);
 
   function handleLogout() {
-    localStorage.removeItem("session");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("nama");
+    localStorage.removeItem("role");
+
     router.replace("/login");
   }
 
