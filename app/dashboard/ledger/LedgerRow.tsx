@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import { hariIndonesia, tanggalHariIni } from "./utils";
 
@@ -19,6 +19,7 @@ export default function LedgerRow() {
   const [tanggal, setTanggal] = useState(tanggalHariIni());
 
   const [coa, setCoa] = useState<COA[]>([]);
+  const [pos, setPos] = useState("");
   const [coaId, setCoaId] = useState("");
 
   const [kasir, setKasir] = useState<Kasir[]>([]);
@@ -40,6 +41,7 @@ export default function LedgerRow() {
       setCoa(data);
 
       if (data.length > 0) {
+        setPos(data[0].pos);
         setCoaId(data[0].id);
       }
     }
@@ -61,7 +63,17 @@ export default function LedgerRow() {
     }
   }
 
-  const coaTerpilih = coa.find((c) => c.id === coaId);
+  const daftarPos = [...new Set(coa.map((c) => c.pos))];
+
+  const daftarItem = useMemo(() => {
+    return coa.filter((c) => c.pos === pos);
+  }, [coa, pos]);
+
+  useEffect(() => {
+    if (daftarItem.length > 0) {
+      setCoaId(daftarItem[0].id);
+    }
+  }, [daftarItem]);
 
   return (
     <tr>
@@ -79,18 +91,27 @@ export default function LedgerRow() {
 
       <td>
         <select
-          value={coaId}
-          onChange={(e) => setCoaId(e.target.value)}
+          value={pos}
+          onChange={(e) => setPos(e.target.value)}
         >
-          {coa.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.pos}
-            </option>
+          {daftarPos.map((p) => (
+            <option key={p}>{p}</option>
           ))}
         </select>
       </td>
 
-      <td>{coaTerpilih?.item ?? "-"}</td>
+      <td>
+        <select
+          value={coaId}
+          onChange={(e) => setCoaId(e.target.value)}
+        >
+          {daftarItem.map((i) => (
+            <option key={i.id} value={i.id}>
+              {i.item}
+            </option>
+          ))}
+        </select>
+      </td>
 
       <td>
         <select defaultValue="tunai">
@@ -100,13 +121,9 @@ export default function LedgerRow() {
         </select>
       </td>
 
-      <td>
-        <input type="number" />
-      </td>
+      <td><input type="number" /></td>
 
-      <td>
-        <input type="number" />
-      </td>
+      <td><input type="number" /></td>
 
       <td>0</td>
 

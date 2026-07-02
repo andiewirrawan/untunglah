@@ -4,8 +4,21 @@ import { useState } from "react";
 import LedgerTable from "./LedgerTable";
 import LedgerRow from "./LedgerRow";
 
+export type RowData = {
+  id: number;
+};
+
 export default function LedgerPage() {
-  const [jumlahBaris, setJumlahBaris] = useState(0);
+  const [rows, setRows] = useState<RowData[]>([]);
+
+  function tambahBaris() {
+    setRows((prev) => [
+      ...prev,
+      {
+        id: Date.now() + Math.random(),
+      },
+    ]);
+  }
 
   return (
     <main style={{ padding: 20 }}>
@@ -13,7 +26,7 @@ export default function LedgerPage() {
 
       <br />
 
-      <button onClick={() => setJumlahBaris(jumlahBaris + 1)}>
+      <button onClick={tambahBaris}>
         ➕ Tambah Baris
       </button>
 
@@ -29,15 +42,15 @@ export default function LedgerPage() {
       <br />
 
       <LedgerTable>
-        {jumlahBaris === 0 ? (
+        {rows.length === 0 ? (
           <tr>
             <td colSpan={12} align="center">
               Belum ada transaksi.
             </td>
           </tr>
         ) : (
-          Array.from({ length: jumlahBaris }).map((_, index) => (
-            <LedgerRow key={index} />
+          rows.map((row) => (
+            <LedgerRow key={row.id} />
           ))
         )}
       </LedgerTable>
