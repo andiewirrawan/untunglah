@@ -1,17 +1,24 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const router = useRouter();
+
+  const [nama, setNama] = useState("");
+  const [role, setRole] = useState("");
 
   useEffect(() => {
     const userId = localStorage.getItem("user_id");
 
     if (!userId) {
       router.replace("/login");
+      return;
     }
+
+    setNama(localStorage.getItem("nama") || "");
+    setRole(localStorage.getItem("role") || "");
   }, [router]);
 
   function handleLogout() {
@@ -24,9 +31,21 @@ export default function DashboardPage() {
 
   return (
     <main style={{ padding: 20 }}>
-      <h1>Dashboard Owner</h1>
+      <h1>UNTUNGLAH</h1>
 
-      <p>Selamat datang di Untunglah 🚀</p>
+      <h2>Dashboard</h2>
+
+      <hr />
+
+      <p>
+        <strong>Selamat Datang,</strong>
+      </p>
+
+      <p>{nama}</p>
+
+      <p>
+        <strong>Role :</strong> {role}
+      </p>
 
       <br />
 
