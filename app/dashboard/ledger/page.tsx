@@ -1,6 +1,7 @@
 "use client";
 
 import LedgerTable from "./LedgerTable";
+import LedgerRow from "./LedgerRow";
 
 export default function LedgerPage() {
   return (
@@ -23,11 +24,7 @@ export default function LedgerPage() {
       <br />
 
       <LedgerTable>
-        <tr>
-          <td colSpan={12} align="center">
-            Belum ada transaksi.
-          </td>
-        </tr>
+        <LedgerRow />
       </LedgerTable>
     </main>
   );
