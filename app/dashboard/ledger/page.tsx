@@ -1,43 +1,37 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { useState } from "react";
 
-type Ledger = {
-  id: string;
-  no_transaksi: string;
-  tanggal_transaksi: string;
-  pemasukan: number;
-  pengeluaran: number;
-  status: string;
+type LedgerRow = {
+  id: number;
+  tanggal: string;
+  no: string;
+  pos: string;
+  item: string;
+  transaksi: string;
+  pemasukan: string;
+  pengeluaran: string;
+  catatan: string;
 };
 
 export default function LedgerPage() {
-  const [data, setData] = useState<Ledger[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [rows, setRows] = useState<LedgerRow[]>([]);
 
-  useEffect(() => {
-    loadLedger();
-  }, []);
-
-  async function loadLedger() {
-    const { data, error } = await supabase
-      .from("ledger")
-      .select(
-        "id,no_transaksi,tanggal_transaksi,pemasukan,pengeluaran,status"
-      )
-      .eq("is_deleted", false)
-      .order("tanggal_transaksi", { ascending: false });
-
-    if (!error && data) {
-      setData(data);
-    }
-
-    setLoading(false);
-  }
-
-  if (loading) {
-    return <main style={{ padding: 20 }}>Loading...</main>;
+  function tambahBaris() {
+    setRows([
+      ...rows,
+      {
+        id: Date.now(),
+        tanggal: "",
+        no: "",
+        pos: "",
+        item: "",
+        transaksi: "Tunai",
+        pemasukan: "",
+        pengeluaran: "",
+        catatan: "",
+      },
+    ]);
   }
 
   return (
@@ -46,37 +40,102 @@ export default function LedgerPage() {
 
       <br />
 
-      {data.length === 0 ? (
-        <p>Belum ada transaksi.</p>
-      ) : (
+      <button onClick={tambahBaris}>
+        ➕ Tambah Baris
+      </button>
+
+      <br />
+      <br />
+
+      <div style={{ overflowX: "auto" }}>
         <table
           border={1}
-          cellPadding={8}
-          style={{ borderCollapse: "collapse", width: "100%" }}
+          cellPadding={6}
+          style={{
+            borderCollapse: "collapse",
+            minWidth: "1200px",
+            width: "100%",
+          }}
         >
           <thead>
             <tr>
-              <th>No Transaksi</th>
               <th>Tanggal</th>
+              <th>No Transaksi</th>
+              <th>Pos</th>
+              <th>Item</th>
+              <th>Transaksi</th>
               <th>Pemasukan</th>
               <th>Pengeluaran</th>
-              <th>Status</th>
+              <th>Catatan</th>
             </tr>
           </thead>
 
           <tbody>
-            {data.map((row) => (
+            {rows.length === 0 && (
+              <tr>
+                <td colSpan={8} align="center">
+                  Belum ada data.
+                </td>
+              </tr>
+            )}
+
+            {rows.map((row) => (
               <tr key={row.id}>
-                <td>{row.no_transaksi}</td>
-                <td>{row.tanggal_transaksi}</td>
-                <td>Rp {Number(row.pemasukan).toLocaleString("id-ID")}</td>
-                <td>Rp {Number(row.pengeluaran).toLocaleString("id-ID")}</td>
-                <td>{row.status}</td>
+                <td>
+                  <input type="date" />
+                </td>
+
+                <td>
+                  <input
+                    value="(otomatis)"
+                    disabled
+                  />
+                </td>
+
+                <td>
+                  <input
+                    placeholder="Pos"
+                  />
+                </td>
+
+                <td>
+                  <input
+                    placeholder="Item"
+                  />
+                </td>
+
+                <td>
+                  <select defaultValue="Tunai">
+                    <option>Tunai</option>
+                    <option>Non Tunai</option>
+                    <option>Piutang</option>
+                  </select>
+                </td>
+
+                <td>
+                  <input
+                    type="number"
+                    placeholder="0"
+                  />
+                </td>
+
+                <td>
+                  <input
+                    type="number"
+                    placeholder="0"
+                  />
+                </td>
+
+                <td>
+                  <input
+                    placeholder="Catatan"
+                  />
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
-      )}
+      </div>
     </main>
   );
 }
