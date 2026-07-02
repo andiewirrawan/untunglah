@@ -44,7 +44,9 @@ export default function DashboardPage() {
 
       <div style={{ display: "grid", gap: 10 }}>
 
-        <button>📒 Ledger Transaksi</button>
+        <button onClick={() => router.push("/dashboard/ledger")}>
+  📒 Ledger Transaksi
+</button>
 
         <button>💰 Cash Count</button>
 
