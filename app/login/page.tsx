@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
@@ -10,6 +10,14 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id");
+
+    if (userId) {
+      router.replace("/dashboard");
+    }
+  }, [router]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
@@ -43,9 +51,7 @@ export default function LoginPage() {
     localStorage.setItem("nama", data.nama);
     localStorage.setItem("role", data.role);
 
-    alert("LOGIN BERHASIL");
-
-    router.push("/dashboard");
+    router.replace("/dashboard");
   }
 
   return (
